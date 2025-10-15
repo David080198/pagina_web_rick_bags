@@ -1,0 +1,33 @@
+# Desarrollo
+.env
+.env.local
+.env.development
+.venv/
+venv/
+
+# Base de datos local
+*.db
+*.sqlite
+*.sqlite3
+
+# Archivos de desarrollo
+app/static/images/products/*
+app/static/images/categories/*
+!app/static/images/products/.gitkeep
+!app/static/images/categories/.gitkeep
+
+# Logs de desarrollo
+*.log
+logs/
+
+# Cache de desarrollo
+.pytest_cache/
+.coverage
+
+# IDE
+.vscode/settings.json
+.idea/workspace.xml
+
+# OS específicos
+.DS_Store
+Thumbs.db

@@ -1,0 +1,98 @@
+version: "3.8"
+
+name: rickbags-ecommerce
+
+services:
+  app:
+    build: .
+    container_name: rickbags_app
+    volumes:
+      - ./app:/app
+      - uploads_data:/app/uploads
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://rickbags_user:rickbags_secure_password_2024@db:5432/rickbags_db
+      - SECRET_KEY=rickbags_super_secret_key_change_in_production_2024
+      - REDIS_URL=redis://redis:6379/0
+      # Email configuration (optional - uncomment and configure)
+      # - MAIL_SERVER=smtp.gmail.com
+      # - MAIL_PORT=587
+      # - MAIL_USERNAME=your-email@gmail.com
+      # - MAIL_PASSWORD=your-app-password
+      # - MAIL_DEFAULT_SENDER=noreply@rickbags.com
+      # Payment configuration (optional - uncomment and configure)
+      # - STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key
+      # - STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key
+      # - PAYPAL_CLIENT_ID=your_paypal_client_id
+      # - PAYPAL_CLIENT_SECRET=your_paypal_client_secret
+    depends_on:
+      - db
+      - redis
+    networks:
+      - rickbags_network
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:alpine
+    container_name: rickbags_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./app/static:/app/static:ro
+      - uploads_data:/app/uploads:ro
+      # Uncomment for SSL certificates
+      # - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      - app
+    networks:
+      - rickbags_network
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: rickbags_db
+    environment:
+      - POSTGRES_DB=rickbags_db
+      - POSTGRES_USER=rickbags_user
+      - POSTGRES_PASSWORD=rickbags_secure_password_2024
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8 --lc-collate=C --lc-ctype=C
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - rickbags_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rickbags_user -d rickbags_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7-alpine
+    container_name: rickbags_redis
+    command: redis-server --appendonly yes --requirepass rickbags_redis_password_2024
+    volumes:
+      - redis_data:/data
+    networks:
+      - rickbags_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  rickbags_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local
+  uploads_data:
+    driver: local
