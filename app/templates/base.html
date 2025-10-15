@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="{% block meta_description %}RickBags - Fundas protectoras premium para amplificadores, guitarras y equipos musicales. Calidad, durabilidad y personalización.{% endblock %}"
+    />
+    <meta
+      name="keywords"
+      content="fundas amplificadores, fundas guitarras, protección musical, Marshall, Fender, Vox"
+    />
+    <meta name="author" content="RickBags" />
+
+    <!-- Open Graph -->
+    <meta
+      property="og:title"
+      content="{% block og_title %}RickBags - Fundas Premium para Equipos Musicales{% endblock %}"
+    />
+    <meta
+      property="og:description"
+      content="{% block og_description %}Fundas protectoras de alta calidad para amplificadores y equipos musicales{% endblock %}"
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="{{ request.url }}" />
+    <meta
+      property="og:image"
+      content="{{ url_for('static', filename='images/rickbags-logo-og.jpg', _external=True) }}"
+    />
+
+    <title>{% block title %}RickBags{% endblock %}</title>
+
+    <!-- Favicon -->
+    <link
+      rel="icon"
+      type="image/x-icon"
+      href="{{ url_for('static', filename='images/favicon.ico') }}"
+    />
+    <link
+      rel="apple-touch-icon"
+      href="{{ url_for('static', filename='images/apple-touch-icon.png') }}"
+    />
+
+    <!-- CSS -->
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/style.css') }}"
+    />
+
+    <!-- Font Awesome for Icons -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+
+    {% block head %}{% endblock %}
+  </head>
+  <body>
+    <!-- Flash Messages -->
+    <div class="flash-messages">
+      {% with messages = get_flashed_messages(with_categories=true) %} {% if
+      messages %} {% for category, message in messages %}
+      <div class="flash-message flash-{{ category }}">
+        <i
+          class="fas fa-times flash-close"
+          onclick="this.parentElement.remove()"
+        ></i>
+        {{ message }}
+      </div>
+      {% endfor %} {% endif %} {% endwith %}
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+      <div class="container">
+        <nav class="navbar">
+          <!-- Logo -->
+          <a href="{{ url_for('main.index') }}" class="logo">
+            Rick<span class="accent">Bags</span>
+          </a>
+
+          <!-- Navigation Menu -->
+          <ul class="nav-menu">
+            <li class="nav-item">
+              <a
+                href="{{ url_for('main.index') }}"
+                class="nav-link {% if request.endpoint == 'main.index' %}active{% endif %}"
+              >
+                Inicio
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="{{ url_for('products.catalog') }}"
+                class="nav-link {% if request.blueprint == 'products' %}active{% endif %}"
+              >
+                Catálogo
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="{{ url_for('products.custom_case') }}"
+                class="nav-link {% if request.endpoint == 'products.custom_case' %}active{% endif %}"
+              >
+                Personalizar
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="{{ url_for('main.about') }}"
+                class="nav-link {% if request.endpoint == 'main.about' %}active{% endif %}"
+              >
+                Nosotros
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="{{ url_for('main.contact') }}"
+                class="nav-link {% if request.endpoint == 'main.contact' %}active{% endif %}"
+              >
+                Contacto
+              </a>
+            </li>
+          </ul>
+
+          <!-- Navigation Actions -->
+          <div class="nav-actions">
+            <!-- Search Box -->
+            <form
+              class="search-box"
+              action="{{ url_for('main.search') }}"
+              method="GET"
+            >
+              <input
+                type="text"
+                name="q"
+                class="search-input"
+                placeholder="Buscar productos..."
+                value="{{ request.args.get('q', '') }}"
+              />
+              <button type="submit" class="search-btn">
+                <i class="fas fa-search"></i>
+              </button>
+            </form>
+
+            <!-- User Menu -->
+            {% if current_user.is_authenticated %}
+            <div class="user-menu">
+              <div class="dropdown">
+                <a href="#" class="nav-link dropdown-toggle">
+                  <i class="fas fa-user"></i>
+                  {{ current_user.first_name }}
+                </a>
+                <div class="dropdown-menu">
+                  <a href="{{ url_for('auth.profile') }}" class="dropdown-item">
+                    <i class="fas fa-user-circle"></i> Mi Perfil
+                  </a>
+                  <a href="#" class="dropdown-item">
+                    <i class="fas fa-heart"></i> Lista de Deseos
+                  </a>
+                  <a href="#" class="dropdown-item">
+                    <i class="fas fa-box"></i> Mis Pedidos
+                  </a>
+                  {% if current_user.is_admin %}
+                  <div class="dropdown-divider"></div>
+                  <a
+                    href="{{ url_for('admin.dashboard') }}"
+                    class="dropdown-item"
+                  >
+                    <i class="fas fa-cog"></i> Administración
+                  </a>
+                  {% endif %}
+                  <div class="dropdown-divider"></div>
+                  <a href="{{ url_for('auth.logout') }}" class="dropdown-item">
+                    <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+                  </a>
+                </div>
+              </div>
+            </div>
+            {% else %}
+            <a href="{{ url_for('auth.login') }}" class="nav-link">
+              <i class="fas fa-sign-in-alt"></i>
+              Entrar
+            </a>
+            {% endif %}
+
+            <!-- Shopping Cart -->
+            <a href="{{ url_for('cart.view_cart') }}" class="cart-icon">
+              <i class="fas fa-shopping-cart"></i>
+              {% if cart_count > 0 %}
+              <span class="cart-count">{{ cart_count }}</span>
+              {% endif %}
+            </a>
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main-content">{% block content %}{% endblock %}</main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="container">
+        <div class="footer-content">
+          <div class="row">
+            <!-- Company Info -->
+            <div class="col-md-4">
+              <div class="footer-section">
+                <h3 class="footer-title">
+                  Rick<span class="accent">Bags</span>
+                </h3>
+                <p class="footer-text">
+                  Especialistas en fundas protectoras premium para equipos
+                  musicales. Calidad, durabilidad y personalización para músicos
+                  exigentes.
+                </p>
+                <div class="social-links">
+                  <a href="#" class="social-link">
+                    <i class="fab fa-facebook-f"></i>
+                  </a>
+                  <a href="#" class="social-link">
+                    <i class="fab fa-instagram"></i>
+                  </a>
+                  <a href="#" class="social-link">
+                    <i class="fab fa-youtube"></i>
+                  </a>
+                  <a href="#" class="social-link">
+                    <i class="fab fa-twitter"></i>
+                  </a>
+                </div>
+              </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="col-md-2">
+              <div class="footer-section">
+                <h4 class="footer-subtitle">Enlaces</h4>
+                <ul class="footer-links">
+                  <li><a href="{{ url_for('main.index') }}">Inicio</a></li>
+                  <li>
+                    <a href="{{ url_for('products.catalog') }}">Catálogo</a>
+                  </li>
+                  <li>
+                    <a href="{{ url_for('products.custom_case') }}"
+                      >Personalizar</a
+                    >
+                  </li>
+                  <li><a href="{{ url_for('main.about') }}">Nosotros</a></li>
+                  <li><a href="{{ url_for('main.contact') }}">Contacto</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Categories -->
+            <div class="col-md-2">
+              <div class="footer-section">
+                <h4 class="footer-subtitle">Categorías</h4>
+                <ul class="footer-links">
+                  <li><a href="#">Amplificadores</a></li>
+                  <li><a href="#">Guitarras</a></li>
+                  <li><a href="#">Teclados</a></li>
+                  <li><a href="#">Accesorios</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Support -->
+            <div class="col-md-2">
+              <div class="footer-section">
+                <h4 class="footer-subtitle">Soporte</h4>
+                <ul class="footer-links">
+                  <li><a href="{{ url_for('main.faq') }}">FAQ</a></li>
+                  <li><a href="#">Envíos</a></li>
+                  <li><a href="#">Devoluciones</a></li>
+                  <li><a href="#">Garantía</a></li>
+                </ul>
+              </div>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="col-md-2">
+              <div class="footer-section">
+                <h4 class="footer-subtitle">Newsletter</h4>
+                <p class="footer-text">Recibe ofertas exclusivas</p>
+                <form
+                  class="newsletter-form"
+                  action="{{ url_for('api.newsletter_subscribe') }}"
+                  method="POST"
+                >
+                  <div class="form-group">
+                    <input
+                      type="email"
+                      name="email"
+                      class="form-control"
+                      placeholder="Tu email"
+                      required
+                    />
+                  </div>
+                  <button type="submit" class="btn btn-primary btn-sm">
+                    Suscribirse
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Footer Bottom -->
+        <div class="footer-bottom">
+          <div class="row align-center">
+            <div class="col-md-6">
+              <p class="copyright">
+                &copy; {{ moment().year }} RickBags. Todos los derechos
+                reservados.
+              </p>
+            </div>
+            <div class="col-md-6 text-right">
+              <div class="footer-legal">
+                <a href="{{ url_for('main.terms') }}">Términos y Condiciones</a>
+                <span class="separator">|</span>
+                <a href="{{ url_for('main.privacy') }}"
+                  >Política de Privacidad</a
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    {% block scripts %}{% endblock %}
+
+    <!-- Auto-hide flash messages -->
+    <script>
+      setTimeout(function () {
+        document.querySelectorAll(".flash-message").forEach(function (msg) {
+          msg.style.opacity = "0";
+          setTimeout(function () {
+            msg.remove();
+          }, 300);
+        });
+      }, 5000);
+    </script>
+  </body>
+</html>

@@ -1,0 +1,465 @@
+{% extends "base.html" %} {% block title %}RickBags - Fundas Premium para
+Equipos Musicales{% endblock %} {% block meta_description %}RickBags ofrece
+fundas protectoras premium para amplificadores, guitarras y equipos musicales.
+Personalización, calidad y durabilidad para músicos profesionales.{% endblock %}
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-content fade-in-up">
+      <h1 class="hero-title">
+        Protege Tu <span class="accent">Equipo Musical</span>
+      </h1>
+      <p class="hero-subtitle">
+        Fundas premium personalizadas para amplificadores, guitarras y teclados.
+        Calidad profesional que protege tu inversión.
+      </p>
+      <div class="hero-actions">
+        <a
+          href="{{ url_for('products.catalog') }}"
+          class="btn btn-primary btn-lg"
+        >
+          <i class="fas fa-shopping-bag"></i>
+          Ver Catálogo
+        </a>
+        <a
+          href="{{ url_for('products.custom_case') }}"
+          class="btn btn-outline btn-lg"
+        >
+          <i class="fas fa-drafting-compass"></i>
+          Diseña Tu Funda
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Categories Section -->
+<section class="categories-section p-5">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <h2 class="section-title">Nuestras Especialidades</h2>
+      <p class="section-subtitle">
+        Fundas diseñadas específicamente para cada tipo de equipo musical
+      </p>
+    </div>
+
+    <div class="row">
+      {% for category in categories %}
+      <div class="col-md-4 mb-4">
+        <div class="category-card card">
+          <div class="category-image">
+            <img
+              src="{{ category.image or '/static/images/categories/default.jpg' }}"
+              alt="{{ category.name }}"
+              class="card-img"
+            />
+            <div class="category-overlay">
+              <div class="category-content">
+                <h3 class="category-title">{{ category.name }}</h3>
+                <p class="category-description">{{ category.description }}</p>
+                <a
+                  href="{{ url_for('products.catalog', category=category.id) }}"
+                  class="btn btn-primary"
+                >
+                  Ver Productos
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<section class="featured-section p-5">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <h2 class="section-title">Productos Destacados</h2>
+      <p class="section-subtitle">Los favoritos de nuestros clientes</p>
+    </div>
+
+    <div class="row">
+      {% for product in featured_products %}
+      <div class="col-md-3 col-sm-6 mb-4">
+        <div class="product-card card">
+          {% if product.discount_percentage > 0 %}
+          <div class="badge sale">-{{ product.discount_percentage }}%</div>
+          {% endif %} {% if product.featured %}
+          <div class="badge featured" style="top: 60px">Destacado</div>
+          {% endif %}
+
+          <div class="product-image-container">
+            <img
+              src="{{ product.main_image or '/static/images/products/default.jpg' }}"
+              alt="{{ product.name }}"
+              class="product-image"
+            />
+            <div class="product-actions">
+              <button
+                class="btn btn-sm btn-outline wishlist-btn"
+                data-product-id="{{ product.id }}"
+                title="Agregar a lista de deseos"
+              >
+                <i class="fas fa-heart"></i>
+              </button>
+              <a
+                href="{{ url_for('products.detail', product_id=product.id) }}"
+                class="btn btn-sm btn-outline"
+                title="Vista rápida"
+              >
+                <i class="fas fa-eye"></i>
+              </a>
+            </div>
+          </div>
+
+          <div class="product-info card-body">
+            <h4 class="product-title">
+              <a href="{{ url_for('products.detail', product_id=product.id) }}">
+                {{ product.name }}
+              </a>
+            </h4>
+
+            {% if product.review_count > 0 %}
+            <div class="product-rating">
+              {% for i in range(5) %}
+              <i
+                class="fas fa-star {% if i < product.average_rating %}star{% else %}star empty{% endif %}"
+              ></i>
+              {% endfor %}
+              <span class="rating-count">({{ product.review_count }})</span>
+            </div>
+            {% endif %}
+
+            <div class="product-price">
+              ${{ "%.2f"|format(product.price) }} {% if product.compare_price
+              and product.compare_price > product.price %}
+              <span class="original"
+                >${{ "%.2f"|format(product.compare_price) }}</span
+              >
+              {% endif %}
+            </div>
+
+            <p class="product-description">{{ product.short_description }}</p>
+
+            <div class="product-footer">
+              <form class="add-to-cart-form" data-product-id="{{ product.id }}">
+                <div class="quantity-selector">
+                  <button type="button" class="qty-btn minus">-</button>
+                  <input
+                    type="number"
+                    name="quantity"
+                    value="1"
+                    min="1"
+                    class="qty-input"
+                  />
+                  <button type="button" class="qty-btn plus">+</button>
+                </div>
+                <button type="submit" class="btn btn-primary add-to-cart-btn">
+                  <i class="fas fa-shopping-cart"></i>
+                  Agregar
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="text-center mt-4">
+      <a
+        href="{{ url_for('products.catalog') }}"
+        class="btn btn-secondary btn-lg"
+      >
+        Ver Todos los Productos
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="features-section p-5">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <h2 class="section-title">¿Por Qué Elegir RickBags?</h2>
+    </div>
+
+    <div class="row">
+      <div class="col-md-3 text-center mb-4">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-shield-alt"></i>
+          </div>
+          <h4 class="feature-title">Máxima Protección</h4>
+          <p class="feature-text">
+            Materiales de alta calidad que protegen tu equipo de impactos,
+            humedad y polvo.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-3 text-center mb-4">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-palette"></i>
+          </div>
+          <h4 class="feature-title">Personalización Total</h4>
+          <p class="feature-text">
+            Diseña tu funda exactamente como la necesitas. Dimensiones,
+            materiales y colores a medida.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-3 text-center mb-4">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-truck-fast"></i>
+          </div>
+          <h4 class="feature-title">Envío Rápido</h4>
+          <p class="feature-text">
+            Fabricación y envío en 3-5 días laborables. Seguimiento completo de
+            tu pedido.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-3 text-center mb-4">
+        <div class="feature-item">
+          <div class="feature-icon">
+            <i class="fas fa-award"></i>
+          </div>
+          <h4 class="feature-title">Garantía de Calidad</h4>
+          <p class="feature-text">
+            2 años de garantía en todos nuestros productos. Satisfacción 100%
+            garantizada.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Custom Case Designer CTA -->
+<section class="cta-section p-5">
+  <div class="container">
+    <div class="cta-content text-center">
+      <h2 class="cta-title">¿Necesitas una Funda Personalizada?</h2>
+      <p class="cta-subtitle">
+        Usa nuestro diseñador interactivo para crear la funda perfecta para tu
+        equipo. Precio en tiempo real y vista previa 3D.
+      </p>
+      <a
+        href="{{ url_for('products.custom_case') }}"
+        class="btn btn-primary btn-lg cta-btn"
+      >
+        <i class="fas fa-drafting-compass"></i>
+        Diseñar Mi Funda
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Testimonials -->
+<section class="testimonials-section p-5">
+  <div class="container">
+    <div class="section-header text-center mb-5">
+      <h2 class="section-title">Lo Que Dicen Nuestros Clientes</h2>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4 mb-4">
+        <div class="testimonial-card card">
+          <div class="card-body">
+            <div class="testimonial-rating">
+              {% for i in range(5) %}
+              <i class="fas fa-star star"></i>
+              {% endfor %}
+            </div>
+            <p class="testimonial-text">
+              "Excelente calidad y acabado. Mi Marshall JCM800 viaja seguro y
+              con estilo. El servicio al cliente es excepcional."
+            </p>
+            <div class="testimonial-author">
+              <strong>Carlos Rodríguez</strong>
+              <span>Guitarrista Profesional</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="testimonial-card card">
+          <div class="card-body">
+            <div class="testimonial-rating">
+              {% for i in range(5) %}
+              <i class="fas fa-star star"></i>
+              {% endfor %}
+            </div>
+            <p class="testimonial-text">
+              "La funda personalizada para mi Fender Twin quedó perfecta. El
+              diseñador online es muy fácil de usar."
+            </p>
+            <div class="testimonial-author">
+              <strong>Ana María López</strong>
+              <span>Músico de Estudio</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4 mb-4">
+        <div class="testimonial-card card">
+          <div class="card-body">
+            <div class="testimonial-rating">
+              {% for i in range(5) %}
+              <i class="fas fa-star star"></i>
+              {% endfor %}
+            </div>
+            <p class="testimonial-text">
+              "Llevo años usando RickBags. Durabilidad increíble y siempre
+              innovando. Totalmente recomendado."
+            </p>
+            <div class="testimonial-author">
+              <strong>Miguel Santos</strong>
+              <span>Tour Manager</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %} {% block scripts %}
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    // Add to cart functionality
+    document.querySelectorAll(".add-to-cart-form").forEach((form) => {
+      form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        const productId = this.dataset.productId;
+        const quantity = this.querySelector('input[name="quantity"]').value;
+        const button = this.querySelector(".add-to-cart-btn");
+
+        // Add loading state
+        button.innerHTML = '<span class="loading"></span> Agregando...';
+        button.disabled = true;
+
+        fetch(`/cart/add/${productId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+          body: `quantity=${quantity}`,
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Update cart count
+            const cartCount = document.querySelector(".cart-count");
+            if (cartCount) {
+              cartCount.textContent = data.cart_count;
+            } else if (data.cart_count > 0) {
+              // Create cart count element if it doesn't exist
+              const cartIcon = document.querySelector(".cart-icon");
+              const countElement = document.createElement("span");
+              countElement.className = "cart-count";
+              countElement.textContent = data.cart_count;
+              cartIcon.appendChild(countElement);
+            }
+
+            // Show success message
+            showFlashMessage("success", data.message);
+
+            // Reset button
+            button.innerHTML = '<i class="fas fa-shopping-cart"></i> Agregado';
+            setTimeout(() => {
+              button.innerHTML = '<i class="fas fa-shopping-cart"></i> Agregar';
+              button.disabled = false;
+            }, 2000);
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            showFlashMessage(
+              "error",
+              "Error al agregar el producto al carrito"
+            );
+
+            // Reset button
+            button.innerHTML = '<i class="fas fa-shopping-cart"></i> Agregar';
+            button.disabled = false;
+          });
+      });
+    });
+
+    // Quantity selectors
+    document.querySelectorAll(".qty-btn").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const input = this.parentElement.querySelector(".qty-input");
+        const isPlus = this.classList.contains("plus");
+        let value = parseInt(input.value);
+
+        if (isPlus) {
+          value++;
+        } else if (value > 1) {
+          value--;
+        }
+
+        input.value = value;
+      });
+    });
+
+    // Wishlist functionality
+    document.querySelectorAll(".wishlist-btn").forEach((btn) => {
+      btn.addEventListener("click", function () {
+        const productId = this.dataset.productId;
+
+        fetch(`/api/wishlist/add/${productId}`, {
+          method: "POST",
+          headers: {
+            "X-Requested-With": "XMLHttpRequest",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            showFlashMessage("success", data.message);
+            this.innerHTML =
+              '<i class="fas fa-heart" style="color: var(--color-accent-red);"></i>';
+          })
+          .catch((error) => {
+            console.error("Error:", error);
+            showFlashMessage(
+              "error",
+              "Debes iniciar sesión para agregar a lista de deseos"
+            );
+          });
+      });
+    });
+  });
+
+  function showFlashMessage(type, message) {
+    const flashContainer = document.querySelector(".flash-messages");
+    const flashMessage = document.createElement("div");
+    flashMessage.className = `flash-message flash-${type}`;
+    flashMessage.innerHTML = `
+        <i class="fas fa-times flash-close" onclick="this.parentElement.remove()"></i>
+        ${message}
+    `;
+
+    flashContainer.appendChild(flashMessage);
+
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+      if (flashMessage.parentElement) {
+        flashMessage.style.opacity = "0";
+        setTimeout(() => flashMessage.remove(), 300);
+      }
+    }, 5000);
+  }
+</script>
+{% endblock %}

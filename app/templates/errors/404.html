@@ -1,0 +1,127 @@
+{% extends "base.html" %} {% block title %}404 - Página no encontrada |
+RickBags{% endblock %} {% block content %}
+<section class="error-section">
+  <div class="container">
+    <div class="error-content text-center">
+      <div class="error-code">404</div>
+      <h1 class="error-title">Página no encontrada</h1>
+      <p class="error-description">
+        Lo sentimos, la página que buscas no existe o ha sido movida.
+      </p>
+      <div class="error-actions">
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+          <i class="fas fa-home"></i>
+          Ir al Inicio
+        </a>
+        <a href="{{ url_for('products.catalog') }}" class="btn btn-outline">
+          <i class="fas fa-shopping-bag"></i>
+          Ver Catálogo
+        </a>
+      </div>
+
+      <!-- Search suggestion -->
+      <div class="error-search">
+        <p>¿Buscas algo específico?</p>
+        <form
+          class="search-form"
+          action="{{ url_for('main.search') }}"
+          method="GET"
+        >
+          <div class="search-group">
+            <input
+              type="text"
+              name="q"
+              class="search-input"
+              placeholder="Buscar productos..."
+            />
+            <button type="submit" class="btn btn-secondary">
+              <i class="fas fa-search"></i>
+              Buscar
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .error-section {
+    padding: 100px 0;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .error-code {
+    font-size: 8rem;
+    font-weight: 900;
+    color: var(--color-accent-red);
+    line-height: 1;
+    margin-bottom: var(--spacing-lg);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .error-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-text-primary);
+  }
+
+  .error-description {
+    font-size: 1.2rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xl);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: var(--spacing-lg);
+    justify-content: center;
+    margin-bottom: var(--spacing-xxl);
+    flex-wrap: wrap;
+  }
+
+  .error-search {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .error-search p {
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-md);
+  }
+
+  .search-group {
+    display: flex;
+    gap: var(--spacing-sm);
+  }
+
+  .search-group .search-input {
+    flex: 1;
+  }
+
+  @media (max-width: 768px) {
+    .error-code {
+      font-size: 5rem;
+    }
+
+    .error-title {
+      font-size: 2rem;
+    }
+
+    .error-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .search-group {
+      flex-direction: column;
+    }
+  }
+</style>
+{% endblock %}

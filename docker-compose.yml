@@ -1,0 +1,60 @@
+version: "3.8"
+
+services:
+  app:
+    build: .
+    container_name: rickbags_app
+    volumes:
+      - ./app:/app
+      - ./uploads:/app/uploads
+    environment:
+      - FLASK_ENV=production
+      - DATABASE_URL=postgresql://rickbags_user:rickbags_password@db:5432/rickbags_db
+      - SECRET_KEY=your-super-secret-key-change-in-production
+      - REDIS_URL=redis://redis:6379/0
+    depends_on:
+      - db
+      - redis
+    networks:
+      - rickbags_network
+
+  nginx:
+    image: nginx:alpine
+    container_name: rickbags_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./app/static:/app/static
+      - ./uploads:/app/uploads
+    depends_on:
+      - app
+    networks:
+      - rickbags_network
+
+  db:
+    image: postgres:15
+    container_name: rickbags_db
+    environment:
+      - POSTGRES_DB=rickbags_db
+      - POSTGRES_USER=rickbags_user
+      - POSTGRES_PASSWORD=rickbags_password
+    volumes:
+      - ./db/postgres_data:/var/lib/postgresql/data
+      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - rickbags_network
+
+  redis:
+    image: redis:alpine
+    container_name: rickbags_redis
+    networks:
+      - rickbags_network
+
+networks:
+  rickbags_network:
+    driver: bridge
+
+volumes:
+  postgres_data:

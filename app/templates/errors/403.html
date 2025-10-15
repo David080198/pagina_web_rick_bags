@@ -1,0 +1,83 @@
+{% extends "base.html" %} {% block title %}403 - Acceso denegado | RickBags{%
+endblock %} {% block content %}
+<section class="error-section">
+  <div class="container">
+    <div class="error-content text-center">
+      <div class="error-code">403</div>
+      <h1 class="error-title">Acceso denegado</h1>
+      <p class="error-description">
+        No tienes permisos para acceder a esta página. Si crees que esto es un
+        error, contacta al administrador.
+      </p>
+      <div class="error-actions">
+        <a href="{{ url_for('main.index') }}" class="btn btn-primary">
+          <i class="fas fa-home"></i>
+          Ir al Inicio
+        </a>
+        {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('auth.login') }}" class="btn btn-outline">
+          <i class="fas fa-sign-in-alt"></i>
+          Iniciar Sesión
+        </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .error-section {
+    padding: 100px 0;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+  }
+
+  .error-code {
+    font-size: 8rem;
+    font-weight: 900;
+    color: var(--color-accent-red);
+    line-height: 1;
+    margin-bottom: var(--spacing-lg);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  }
+
+  .error-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-lg);
+    color: var(--color-text-primary);
+  }
+
+  .error-description {
+    font-size: 1.2rem;
+    color: var(--color-text-secondary);
+    margin-bottom: var(--spacing-xl);
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: var(--spacing-lg);
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 768px) {
+    .error-code {
+      font-size: 5rem;
+    }
+
+    .error-title {
+      font-size: 2rem;
+    }
+
+    .error-actions {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>
+{% endblock %}
